@@ -3,14 +3,26 @@ using UnityEngine;
 public class CylinderCollider : MonoBehaviour
 {
     public bool isTrigger = false;
-    public PhysicMaterial material;
-    public Vector3 center;
-    public float radius = 1;
+    public PhysicMaterial material = null;
+    public Vector3 center = Vector3.zero;
+    public float radius = 0.5f;
     public float height = 2;
     [Min(3)]
     public int boxCount = 3;
     public Orientation orientation = Orientation.Y_axis;
     public enum Orientation { X_axis, Y_axis, Z_axis }
+
+    public static bool CheckCylinder(Vector3 position, float height, float radius)
+    {
+        return Physics.CheckBox(position, new Vector3(radius, height, radius)) &&
+            Physics.CheckCapsule(position - new Vector3(0, height, 0), position + new Vector3(0, height, 0), radius);
+    }
+
+    public static bool CheckCylinder(Vector3 position, float height, float radius, Quaternion rotation, LayerMask mask)
+    {
+        return Physics.CheckBox(position, new Vector3(radius, height, radius), rotation, mask) &&
+            Physics.CheckCapsule(position - new Vector3(0, height, 0), position + new Vector3(0, height, 0), radius, mask);
+    }
 
     public void BuildCollider()
     {
@@ -20,11 +32,11 @@ public class CylinderCollider : MonoBehaviour
         int repeats = 0;
 
         Quaternion orientationRot = Quaternion.Euler(0, 0, 0);
-        if(orientation == Orientation.X_axis) 
+        if (orientation == Orientation.X_axis)
         {
             orientationRot = Quaternion.AngleAxis(90f, Vector3.forward);
         }
-        if(orientation == Orientation.Z_axis) 
+        if (orientation == Orientation.Z_axis)
         {
             orientationRot = Quaternion.AngleAxis(90f, Vector3.left);
         }
